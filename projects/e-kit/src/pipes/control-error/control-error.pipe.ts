@@ -14,6 +14,6 @@ export class EkitControlErrorPipe implements PipeTransform {
 
         const error = Object.keys(errors)[0];
 
-        return errors[error];
+        return errors[error] || null;
     }
 }
