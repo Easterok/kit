@@ -15,6 +15,8 @@ import {
     Validator,
 } from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
+import {formatFileSize} from '../../utils/format-file-size';
+import {EkitValidatorsError} from '../../utils/validators';
 
 const noop = () => {};
 
@@ -30,41 +32,43 @@ const CUSTOM_INPUT_VALIDATOR: Provider = {
     multi: true,
 };
 
+const ATTACH_FILE_ERROR = {attachFile: new EkitValidatorsError('Неверный формат файла')};
+
 @Component({
-    selector: 'ekit-input-file',
+    selector: 'app-input-file',
     templateUrl: './input-file.component.html',
     styleUrls: ['./input-file.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR, CUSTOM_INPUT_VALIDATOR],
 })
 export class EkitInputFileComponent implements ControlValueAccessor, Validator {
-    @Input() allowTypeFile = [];
+    @Input() allowFileTypes: string[] = [];
 
-    @Input() maxSize = 10;
+    @Input() specialFileFormats: string[] = [];
+
+    @Input() maxSize = 10 * 1024 * 1024;
 
     @Input() tooltipInfo: string;
 
-    @ViewChild('nativeInput', {static: true, read: ElementRef}) nativeInput: ElementRef;
-
-    error = false;
-
-    readonly error$ = new BehaviorSubject<string>(null);
-
-    type: string;
+    @ViewChild('nativeInput', {read: ElementRef, static: true})
+    private readonly nativeInput: ElementRef;
 
     readonly files$ = new BehaviorSubject<any>([]);
+    readonly error$ = new BehaviorSubject<string | null>(null);
 
-    private innerValue: any;
-
+    private innerValue: FileList | File | null;
     private onTouchedCallback: () => void = noop;
+    private onChangeCallback: (_: FileList | File | null) => void = noop;
 
-    private onChangeCallback: (_: FileList) => void = noop;
+    get hasError(): boolean {
+        return this.error$.value !== null;
+    }
 
-    get value(): FileList {
+    get value(): FileList | File | null {
         return this.innerValue;
     }
 
-    set value(v: FileList) {
+    set value(v: FileList | File | null) {
         if (v !== this.innerValue) {
             this.innerValue = v;
             this.onChangeCallback(v);
@@ -75,14 +79,8 @@ export class EkitInputFileComponent implements ControlValueAccessor, Validator {
         this.onTouchedCallback();
     }
 
-    validate(control: FormControl): {attachFileError: {valid: boolean}} | null {
-        return !this.error
-            ? null
-            : {
-                  attachFileError: {
-                      valid: false,
-                  },
-              };
+    validate(control: FormControl): {attachFile: EkitValidatorsError} | null {
+        return !this.hasError ? null : ATTACH_FILE_ERROR;
     }
 
     writeValue(value: FileList | null) {
@@ -108,60 +106,72 @@ export class EkitInputFileComponent implements ControlValueAccessor, Validator {
         }
 
         this.files$.next([file]);
-        this.error = false;
-        this.error$.next('');
+        this.error$.next(null);
 
         const size = file.size / 1024 / 1024;
 
         if (size > this.maxSize) {
-            this.error = true;
-            this.error$.next(`Максимальный размер файла - ${this.maxSize} Mb`);
+            this.error$.next(
+                `Максимальный размер файла - ${formatFileSize(this.maxSize)}`,
+            );
 
             return;
         }
 
-        // // todo: file type error
-        // if (
-        //     (!this.allowTypeFile.length && !this.isLetFile(file)) ||
-        //     (this.allowTypeFile.length && this.allowTypeFile.indexOf(file.type) < 0)
-        // ) {
-        //     this.error = true;
-        //
-        //     const [_, type] = this.allowTypeFile.map(typeFile => typeFile.split('/'));
-        //     const message = type ? '.' + type[0] + '.' + type[1] : '.let';
-        //
-        //     this.error$.next(`Разрешенные типы файла - ${message}`);
-        //
-        //     return;
-        // }
+        if (!file.type) {
+            this.checkOnSpecialFileFormats(file);
+        }
 
-        this.value = file;
+        if (file.type && this.allowFileTypes.length !== 0) {
+            this.checkOnAllowedFileTypes(file);
+        }
+
+        if (!this.hasError) {
+            this.value = file;
+        }
     }
 
     removeFile() {
-        // todo: filter current file
         this.value = null;
         this.files$.next([]);
-        this.error$.next('');
+        this.error$.next(null);
         this.nativeInput.nativeElement.value = '';
-        this.error = true;
     }
 
-    getSize(size: number): string {
-        if (size < 10) {
-            return '';
+    private checkOnSpecialFileFormats(file: File) {
+        const [_, type] = file.name.split('.');
+
+        const hasError = !this.specialFileFormats.includes(type);
+
+        if (hasError) {
+            this.error$.next(this.getErrorMessage());
+        }
+    }
+
+    private checkOnAllowedFileTypes(file: File) {
+        const hasError = !this.allowFileTypes.includes(file.type);
+
+        if (hasError) {
+            this.error$.next(this.getErrorMessage());
+        }
+    }
+
+    private getErrorMessage(): string {
+        const JOINED_STR = ', .';
+        const ALLOWED = 'Разрешенные типы файла - ';
+
+        if (this.specialFileFormats.length !== 0) {
+            const message = '.' + this.specialFileFormats.join(JOINED_STR);
+
+            return ALLOWED + message;
         }
 
-        const strSize = size / 1024 / 1024;
+        if (this.allowFileTypes.length !== 0) {
+            const [_, allowedTypes] = this.allowFileTypes.map(type => type.split('/'));
 
-        return strSize < 1
-            ? (strSize * 1024).toFixed(2) + 'Kb'
-            : strSize.toFixed(2) + 'Mb';
-    }
+            return ALLOWED + '.' + allowedTypes.join(JOINED_STR);
+        }
 
-    private isLetFile({name}: File): boolean {
-        const dotIndex = name.lastIndexOf('.');
-
-        return name.slice(dotIndex + 1) === 'let';
+        return 'Неверный формат файла';
     }
 }
