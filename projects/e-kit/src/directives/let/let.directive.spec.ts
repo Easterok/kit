@@ -21,7 +21,7 @@ describe('EkitLetDirective', () => {
     });
 
     it('Вывелся текст', () => {
-        const text = component.text.nativeElement.textContent;
+        const text = component.text.nativeElement.textContent.trim();
 
         expect(text).toBe('hello 12345, 12345, 12345');
     });
