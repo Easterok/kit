@@ -2,9 +2,9 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {EkitValidatorsError} from '../../utils/validators';
 
 @Pipe({
-    name: 'controlError',
+    name: 'ekitControlError',
 })
-export class ControlErrorPipe implements PipeTransform {
+export class EkitControlErrorPipe implements PipeTransform {
     transform(
         errors: {[key: string]: EkitValidatorsError} | null,
     ): EkitValidatorsError | null {

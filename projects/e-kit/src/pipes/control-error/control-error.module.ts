@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ControlErrorPipe} from './control-error.pipe';
+import {EkitControlErrorPipe} from './control-error.pipe';
 
 @NgModule({
-    declarations: [ControlErrorPipe],
+    declarations: [EkitControlErrorPipe],
     imports: [CommonModule],
-    exports: [ControlErrorPipe],
+    exports: [EkitControlErrorPipe],
 })
-export class ControlErrorModule {}
+export class EkitControlErrorModule {}
