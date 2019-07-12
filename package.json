@@ -8,7 +8,8 @@
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e",
-        "build:e-kit": "ng build e-kit"
+        "build:e-kit": "ng build e-kit",
+        "publish:e-kit": "npm run build:e-kit && cd dist/e-kit && npm publish"
     },
     "private": true,
     "dependencies": {

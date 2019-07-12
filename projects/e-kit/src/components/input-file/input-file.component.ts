@@ -20,13 +20,13 @@ const noop = () => {};
 
 const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: Provider = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => InputFileComponent),
+    useExisting: forwardRef(() => EkitInputFileComponent),
     multi: true,
 };
 
 const CUSTOM_INPUT_VALIDATOR: Provider = {
     provide: NG_VALIDATORS,
-    useExisting: forwardRef(() => InputFileComponent),
+    useExisting: forwardRef(() => EkitInputFileComponent),
     multi: true,
 };
 
@@ -37,7 +37,7 @@ const CUSTOM_INPUT_VALIDATOR: Provider = {
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR, CUSTOM_INPUT_VALIDATOR],
 })
-export class InputFileComponent implements ControlValueAccessor, Validator {
+export class EkitInputFileComponent implements ControlValueAccessor, Validator {
     @Input() allowTypeFile = [];
 
     @Input() maxSize = 10;

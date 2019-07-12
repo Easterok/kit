@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {AutoFocusDirective} from './auto-focus.directive';
+import {EkitAutoFocusDirective} from './auto-focus.directive';
 
 @NgModule({
-    declarations: [AutoFocusDirective],
+    declarations: [EkitAutoFocusDirective],
     imports: [CommonModule],
-    exports: [AutoFocusDirective],
+    exports: [EkitAutoFocusDirective],
 })
-export class AutoFocusModule {}
+export class EkitAutoFocusModule {}

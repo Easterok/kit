@@ -1,11 +1,11 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {InputFileComponent} from './input-file.component';
+import {EkitInputFileComponent} from './input-file.component';
 import {MatIconModule, MatTooltipModule} from '@angular/material';
 
 @NgModule({
-    declarations: [InputFileComponent],
+    declarations: [EkitInputFileComponent],
     imports: [CommonModule, MatIconModule, MatTooltipModule],
-    exports: [InputFileComponent],
+    exports: [EkitInputFileComponent],
 })
-export class InputFileModule {}
+export class EkitInputFileModule {}
