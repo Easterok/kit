@@ -4,6 +4,10 @@ const emailRegExp = /^[-\w]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/;
 const usernameRegExp = /^[a-zA-Zа-яА-ЯёЁ][a-zA-Zа-яА-ЯёЁ0-9\-_+@.]{2,30}$/;
 const passwordRegExp = /^(?=.*[A-zА-яёЁ])(?=.*[\d@.+\-])[A-zА-яёЁ\d@.+\-]{8,50}$/;
 
+type EkitValidatorFn = (
+    control: AbstractControl,
+) => {[key: string]: EkitValidatorsError} | null;
+
 export class EkitValidatorsError {
     constructor(private readonly message: string) {}
 
@@ -48,12 +52,57 @@ export function passwordValidator(
           };
 }
 
+// todo: tests
 export function requiredValidator(
     control: AbstractControl,
 ): {required: EkitValidatorsError} | null {
     return !!control.value
         ? null
         : {required: new EkitValidatorsError('Поле обязательно для заполнения')};
+}
+
+// todo: tests
+export function minLengthValidator(length: number): EkitValidatorFn {
+    return (control: AbstractControl): {minLength: EkitValidatorsError} | null => {
+        return control.value && control.value.length > length
+            ? null
+            : {
+                  minLength: new EkitValidatorsError(`Минимальная длина — ${length}`),
+              };
+    };
+}
+
+// todo: tests
+export function maxLengthValidator(length: number): EkitValidatorFn {
+    return (control: AbstractControl): {maxLength: EkitValidatorsError} | null => {
+        return control.value && control.value.length <= length
+            ? null
+            : {
+                  maxLength: new EkitValidatorsError(`Максимальная длина — ${length}`),
+              };
+    };
+}
+
+// todo: tests
+export function minValidator(min: number): EkitValidatorFn {
+    return (control: AbstractControl): {min: EkitValidatorsError} | null => {
+        return control.value > min
+            ? null
+            : {
+                  min: new EkitValidatorsError(`Минимальное значение - ${min}`),
+              };
+    };
+}
+
+// todo: tests
+export function maxValidator(max: number): EkitValidatorFn {
+    return (control: AbstractControl): {max: EkitValidatorsError} | null => {
+        return control.value <= max
+            ? null
+            : {
+                  max: new EkitValidatorsError(`Максимальное значение - ${max}`),
+              };
+    };
 }
 
 export function matchingPasswords(passwordKey: string, confirmPasswordKey: string): any {
