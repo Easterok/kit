@@ -1,10 +1,5 @@
-import {
-    HTTP_INTERCEPTORS,
-    HttpEvent,
-    HttpHandler,
-    HttpInterceptor,
-    HttpRequest,
-} from '@angular/common/http';
+import {Provider} from '@angular/core';
+import {HTTP_INTERCEPTORS, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest,} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 export class WithCredentialsInterceptor implements HttpInterceptor {
@@ -13,7 +8,7 @@ export class WithCredentialsInterceptor implements HttpInterceptor {
     }
 }
 
-export const WITH_CREDINALS_PROVIDER = {
+export const WITH_CREDENTIALS_PROVIDER: Provider = {
     provide: HTTP_INTERCEPTORS,
     useClass: WithCredentialsInterceptor,
     multi: true,
