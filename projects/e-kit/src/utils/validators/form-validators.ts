@@ -5,7 +5,7 @@ const usernameRegExp = /^[a-zA-Zа-яА-ЯёЁ][a-zA-Zа-яА-ЯёЁ0-9\-_+@.]{2
 const passwordRegExp = /^(?=.*[A-zА-яёЁ])(?=.*[\d@.+\-])[A-zА-яёЁ\d@.+\-]{8,50}$/;
 
 type EkitValidatorFn = (
-    control: AbstractControl,
+    control: AbstractControl | FormGroup,
 ) => {[key: string]: EkitValidatorsError} | null;
 
 export class EkitValidatorsError {
@@ -105,16 +105,26 @@ export function maxValidator(max: number): EkitValidatorFn {
     };
 }
 
-export function matchingPasswords(passwordKey: string, confirmPasswordKey: string): any {
-    return (group: FormGroup): {[key: string]: any} => {
+// todo: tests
+export function matchingPasswords(
+    passwordKey: string,
+    confirmPasswordKey: string,
+): EkitValidatorFn {
+    const passwordMatchingError = {
+        mismatchedPasswords: new EkitValidatorsError('Пароли не совпадают'),
+    };
+
+    return (group: FormGroup): {mismatchedPasswords: EkitValidatorsError} | null => {
         const password = group.controls[passwordKey];
         const confirmPassword = group.controls[confirmPasswordKey];
         const isMatching = password.value === confirmPassword.value;
 
-        if (!isMatching) {
-            confirmPassword.setErrors({mismatchedPasswords: 'Пароли не совпадают'});
+        if (isMatching) {
+            return null;
         }
 
-        return isMatching ? {} : {mismatchedPasswords: true};
+        confirmPassword.setErrors(passwordMatchingError);
+
+        return passwordMatchingError;
     };
 }
