@@ -1,0 +1,52 @@
+@import './property';
+
+.create_spaces(@direction, @i: 1) when (@i =< 12) {
+    .create_spaces(@direction, (@i + 1));
+
+    &_@{direction}-@{i} {
+        & when (@direction = top) {
+            margin-top: @space * @i;
+        }
+
+        & when (@direction = bottom) {
+            margin-bottom: @space * @i;
+        }
+
+        & when (@direction = left) {
+            margin-left: @space * @i;
+        }
+
+        & when (@direction = right) {
+            margin-right: @space * @i;
+        }
+
+        & when (@direction = horizontal) {
+            margin-right: @space * @i;
+            margin-left: @space * @i;
+        }
+
+        & when (@direction = vertical) {
+            margin-top: @space * @i;
+            margin-bottom: @space * @i;
+        }
+
+        & when (@direction = all) {
+            margin: @space * @i;
+        }
+    }
+}
+
+.ekit-space {
+    .create_spaces(top);
+    .create_spaces(bottom);
+    .create_spaces(left);
+    .create_spaces(right);
+    .create_spaces(horizontal);
+    .create_spaces(vertical);
+    .create_spaces(all);
+
+    &_auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
