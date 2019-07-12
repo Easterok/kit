@@ -1,0 +1,27 @@
+@import './property';
+@import './mixins';
+
+.skeleton_text {
+    position: relative;
+    -webkit-text-fill-color: transparent;
+
+    &:before {
+        content: '';
+        animation: background 2s linear infinite alternate;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        min-height: 16px;
+    }
+}
+
+@keyframes background {
+    0% {
+        background-color: @grey-color;
+    }
+    100% {
+        background-color: darken(@grey-color, 4%);
+    }
+}

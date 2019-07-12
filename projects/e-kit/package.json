@@ -1,0 +1,27 @@
+{
+    "name": "e-kit",
+    "version": "0.0.1",
+    "description": "Easter Kit library",
+    "author": "Konstantin Beskrovniy",
+    "keywords": [
+        "typescript",
+        "angular",
+        "ng-packager",
+        "library",
+        "kit",
+        "angular",
+        "components",
+        "directives",
+        "utils"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Easterok/kit.git"
+    },
+    "homepage": "https://github.com/Easterok/kit",
+    "peerDependencies": {
+        "@angular/common": "^8.0.3",
+        "@angular/core": "^8.0.3"
+    }
+}

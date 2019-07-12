@@ -1,0 +1,34 @@
+<div class="file-upload">
+    <input #nativeInput
+           type="file"
+           class="native-input"
+           (change)="changeFile($event)"/>
+    <div class="file-upload_text">
+            <ng-content></ng-content>
+        <mat-icon *ngIf="tooltipInfo && !(files$ | async).length"
+                  class="tooltip-icon"
+                  [matTooltip]="tooltipInfo">help</mat-icon>
+    </div>
+    <ng-container *ngFor="let file of files$ | async">
+        <div *ngIf="file"
+             class="file_preview"
+             [class.file_preview_error]="error"
+             (click)="$event.stopPropagation()">
+            <div class="file file_icon">
+                <mat-icon class="icon">{{error ? 'highlight_off' : 'check_circle_outline'}}</mat-icon>
+            </div>
+            <div class="file_name">{{file?.name}}</div>
+            <div class="file_size">{{getSize(file?.size)}}</div>
+            <div class="file file_delete">
+                <mat-icon class="delete"
+                          (click)="removeFile()">
+                    close
+                </mat-icon>
+            </div>
+        </div>
+        <div *ngIf="error$ | async"
+             class="error">
+            {{error$ | async}}
+        </div>
+    </ng-container>
+</div>

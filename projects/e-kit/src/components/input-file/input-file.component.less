@@ -1,0 +1,116 @@
+@import '../../styles/index';
+
+:host {
+    display: flex;
+    margin-bottom: @space * 2;
+    padding: @space * 2;
+    border: 1px solid @border-color;
+    text-align: center;
+    overflow: hidden;
+}
+
+.file-upload {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    flex-grow: 1;
+    min-height: 44px;
+    cursor: pointer;
+
+    &_text {
+        display: flex;
+        flex: auto;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.native-input {
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+
+    &::-webkit-file-upload-button {
+        display: none;
+    }
+}
+
+.file_preview {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: @space * 2;
+    margin-top: @space;
+    min-height: 44px;
+    border: 1px solid @border-color;
+    border-radius: @radius;
+    z-index: 1;
+
+    &_error {
+        & > .file_name, & > .file_icon {
+            color: @red-color;
+        }
+    }
+
+    &_info {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+}
+
+.file {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &_name {
+        flex: 2 1 auto;
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-align: left;
+        text-overflow: ellipsis;
+        margin-left: @space * 2;
+        color: @green-color;
+    }
+
+    &_icon, &_delete {
+        flex: 0 1 auto;
+    }
+
+    &_icon {
+        color: @green-color;
+    }
+}
+
+.delete {
+    .transition(color);
+    cursor: pointer;
+
+    &:hover {
+        color: @red-color;
+    }
+}
+
+.icon {
+    color: inherit;
+}
+
+.error {
+    color: @red-color;
+    font-size: 13px;
+    margin: @space 0 0;
+}
+
+.tooltip-icon {
+    position: absolute;
+    top: 50%;
+    right: @space * 3;
+    transform: translateY(-50%);
+    color: @text-muted;
+}
