@@ -52,19 +52,21 @@ export function passwordValidator(
           };
 }
 
-// todo: tests
 export function requiredValidator(
     control: AbstractControl,
 ): {required: EkitValidatorsError} | null {
-    return !!control.value
+    const value = control.value;
+
+    return (Array.isArray(value)
+      ? value.length !== 0
+      : !!value)
         ? null
         : {required: new EkitValidatorsError('Поле обязательно для заполнения')};
 }
 
-// todo: tests
 export function minLengthValidator(length: number): EkitValidatorFn {
     return (control: AbstractControl): {minLength: EkitValidatorsError} | null => {
-        return control.value && control.value.length > length
+        return control.value && control.value.length >= length
             ? null
             : {
                   minLength: new EkitValidatorsError(`Минимальная длина — ${length}`),
@@ -72,7 +74,6 @@ export function minLengthValidator(length: number): EkitValidatorFn {
     };
 }
 
-// todo: tests
 export function maxLengthValidator(length: number): EkitValidatorFn {
     return (control: AbstractControl): {maxLength: EkitValidatorsError} | null => {
         return control.value && control.value.length <= length
@@ -83,10 +84,9 @@ export function maxLengthValidator(length: number): EkitValidatorFn {
     };
 }
 
-// todo: tests
 export function minValidator(min: number): EkitValidatorFn {
     return (control: AbstractControl): {min: EkitValidatorsError} | null => {
-        return control.value > min
+        return control.value >= min
             ? null
             : {
                   min: new EkitValidatorsError(`Минимальное значение - ${min}`),
@@ -94,7 +94,6 @@ export function minValidator(min: number): EkitValidatorFn {
     };
 }
 
-// todo: tests
 export function maxValidator(max: number): EkitValidatorFn {
     return (control: AbstractControl): {max: EkitValidatorsError} | null => {
         return control.value <= max
@@ -105,26 +104,31 @@ export function maxValidator(max: number): EkitValidatorFn {
     };
 }
 
-// todo: tests
-export function matchingPasswords(
-    passwordKey: string,
-    confirmPasswordKey: string,
+export function matchingControls(
+    message: string,
+    ...controls: string[]
 ): EkitValidatorFn {
-    const passwordMatchingError = {
-        mismatchedPasswords: new EkitValidatorsError('Пароли не совпадают'),
+    const matchingError = {
+        mismatched: new EkitValidatorsError(message),
     };
 
-    return (group: FormGroup): {mismatchedPasswords: EkitValidatorsError} | null => {
-        const password = group.controls[passwordKey];
-        const confirmPassword = group.controls[confirmPasswordKey];
-        const isMatching = password.value === confirmPassword.value;
+    if (controls.length <= 1) {
+        throw new Error('must be greater than 2 controls');
+    }
+
+    return (group: FormGroup): {mismatched: EkitValidatorsError} | null => {
+        const first = group.controls[controls[0]];
+        const next = controls.slice(1);
+        const isMatching = next.every(key => group.controls[key].value === first.value);
 
         if (isMatching) {
             return null;
         }
 
-        confirmPassword.setErrors(passwordMatchingError);
+        controls.forEach(control => {
+            group.controls[control].setErrors(matchingError);
+        });
 
-        return passwordMatchingError;
+        return matchingError;
     };
 }

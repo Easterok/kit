@@ -1,42 +1,48 @@
-import {FormControl} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {
     EkitValidatorsError,
     emailValidator,
+    matchingControls,
+    maxLengthValidator,
+    maxValidator,
+    minLengthValidator,
+    minValidator,
     passwordValidator,
+    requiredValidator,
     usernameValidator,
 } from '../form-validators';
 
 describe('formValidators', () => {
     describe('email validator', () => {
-        it('Если контрол пустой - error', () => {
+        it('Если контрол пустой - result', () => {
             const control = new FormControl('');
             const {email} = emailValidator(control);
 
             expect(email).toEqual(jasmine.any(EkitValidatorsError));
         });
 
-        it('Если в контроле корректная почта, но лишние символы - error', () => {
+        it('Если в контроле корректная почта, но лишние символы - result', () => {
             const control = new FormControl('!@#email@email.ru');
             const {email} = emailValidator(control);
 
             expect(email).toEqual(jasmine.any(EkitValidatorsError));
         });
 
-        it('Если в контроле между букв пробел - error', () => {
+        it('Если в контроле между букв пробел - result', () => {
             const control = new FormControl('email @google.com');
             const {email} = emailValidator(control);
 
             expect(email).toEqual(jasmine.any(EkitValidatorsError));
         });
 
-        it('Если домен больше 4 символов - error', () => {
+        it('Если домен больше 4 символов - result', () => {
             const control = new FormControl('email@email.rurus');
             const {email} = emailValidator(control);
 
             expect(email).toEqual(jasmine.any(EkitValidatorsError));
         });
 
-        it('Если домен меньше 4 символов - error', () => {
+        it('Если домен меньше 4 символов - result', () => {
             const control = new FormControl('email@email.rurus');
             const {email} = emailValidator(control);
 
@@ -45,9 +51,9 @@ describe('formValidators', () => {
 
         it('Если в контроле корректная почта - null', () => {
             const control = new FormControl('email@email.ru');
-            const error = emailValidator(control);
+            const result = emailValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
         });
     });
 
@@ -96,9 +102,9 @@ describe('formValidators', () => {
 
         it('Если в контроле разрешенные символы - null', () => {
             const control = new FormControl('username12345@_+.');
-            const error = usernameValidator(control);
+            const result = usernameValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
         });
     });
 
@@ -154,44 +160,227 @@ describe('formValidators', () => {
 
         it('Если пароль содержит букв и разрешенные символы - null', () => {
             const control = new FormControl('qwertqwert@_+.');
-            const error = passwordValidator(control);
+            const result = passwordValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
         });
 
         it('Если пароль из букв и цифр - null', () => {
             const control = new FormControl('qwertqwert123');
-            const error = passwordValidator(control);
+            const result = passwordValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
         });
 
         it('Если пароль из букв и цифр и символов - null', () => {
             const control = new FormControl('qwertqwert123@.+');
-            const error = passwordValidator(control);
+            const result = passwordValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
         });
 
         it('Если пароль из букв (с заглавными русскими) и цифр и символов - null', () => {
             const control = new FormControl('qwertqwertАААяяя123');
-            const error = passwordValidator(control);
+            const result = passwordValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
         });
 
         it('Если пароль из букв (с заглавными английскими) и цифр и символов - null', () => {
             const control = new FormControl('qwertqwertAZSW123');
-            const error = passwordValidator(control);
+            const result = passwordValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
         });
 
         it('Если пароль из букв (и русские и английские) и цифр и символов - null', () => {
             const control = new FormControl('qwertqwertAZSWАяФЫВЯЗЩШГН123');
-            const error = passwordValidator(control);
+            const result = passwordValidator(control);
 
-            expect(error).toBeNull();
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('requiredValidator', () => {
+        it('Если значение null, то ошибка', () => {
+            const control = new FormControl(null);
+            const {required} = requiredValidator(control);
+
+            expect(required).toEqual(jasmine.any(EkitValidatorsError));
+        });
+
+        it('Если значение пустая строка, то ошибка', () => {
+            const control = new FormControl('');
+            const {required} = requiredValidator(control);
+
+            expect(required).toEqual(jasmine.any(EkitValidatorsError));
+        });
+
+        it('Если значение пустой массив, то ошибка', () => {
+            const control = new FormControl([]);
+            const {required} = requiredValidator(control);
+
+            expect(required).toEqual(jasmine.any(EkitValidatorsError));
+        });
+
+        it('Если не пустой массив, то null', () => {
+            const control = new FormControl(['q', 'w', 'e']);
+            const result = requiredValidator(control);
+
+            expect(result).toBeNull();
+        });
+
+        it('Если есть значение, то null', () => {
+            const control = new FormControl('qwe');
+            const result = requiredValidator(control);
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('minLengthValidator', () => {
+        it('Если длина строки меньше 20, то ошибка', () => {
+            const control = new FormControl('qwer');
+            const {minLength} = minLengthValidator(20)(control);
+
+            expect(minLength).toEqual(jasmine.any(EkitValidatorsError));
+        });
+
+        it('Если длина строки равна 20, то нет ошибки', () => {
+            const control = new FormControl(new Array(20).fill(' ').join(''));
+            const result = minLengthValidator(20)(control);
+
+            expect(result).toBeNull();
+        });
+
+        it('Если длина строки больше 20, то нет ошибки', () => {
+            const control = new FormControl(new Array(25).fill(' ').join(''));
+            const result = minLengthValidator(25)(control);
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('maxLengthValidator', () => {
+        it('Если длина строки больше 20, то ошибка', () => {
+            const control = new FormControl(new Array(25).fill(' ').join(''));
+
+            const {maxLength} = maxLengthValidator(20)(control);
+
+            expect(maxLength).toEqual(jasmine.any(EkitValidatorsError));
+        });
+
+        it('Если длина строки равна 20, то ошибки нет', () => {
+            const control = new FormControl(new Array(20).fill(' ').join(''));
+            const result = maxLengthValidator(20)(control);
+
+            expect(result).toBeNull();
+        });
+
+        it('Если длина строки меньше 20, то ошибки нет', () => {
+            const control = new FormControl(new Array(10).fill(' ').join(''));
+            const result = maxLengthValidator(20)(control);
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('minValidator', () => {
+        it('Если значение больше 20, то ошибки нет', () => {
+            const control = new FormControl(25);
+            const result = minValidator(20)(control);
+
+            expect(result).toBeNull();
+        });
+
+        it('Если значение равно 20, то ошибки нет', () => {
+            const control = new FormControl(20);
+            const result = minValidator(20)(control);
+
+            expect(result).toBeNull();
+        });
+
+        it('Если значение меньше 20, то ошибка', () => {
+            const control = new FormControl(15);
+            const {min} = minValidator(20)(control);
+
+            expect(min).toEqual(jasmine.any(EkitValidatorsError));
+        });
+    });
+
+    describe('maxValidator', () => {
+        it('Если значение больше 20, то ошибка', () => {
+            const control = new FormControl(25);
+            const {max} = maxValidator(20)(control);
+
+            expect(max).toEqual(jasmine.any(EkitValidatorsError));
+        });
+
+        it('Если значение равно 20, то ошибки нет', () => {
+            const control = new FormControl(20);
+            const result = maxValidator(20)(control);
+
+            expect(result).toBeNull();
+        });
+
+        it('Если значение меньше 20, то ошибки нет', () => {
+            const control = new FormControl(15);
+            const result = maxValidator(20)(control);
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('matchingControls', () => {
+        it('Если значения не совпадают, то форма не валидна', () => {
+            const form = new FormGroup(
+                {
+                    control1: new FormControl(),
+                    control2: new FormControl(),
+                },
+                matchingControls('error', 'control1', 'control2'),
+            );
+
+            form.setValue({control1: 'asd', control2: 'qwe'});
+
+            expect(form.invalid).toBeTruthy();
+        });
+
+        it('Если значения не совпадают, то во всех контролах ошибки', () => {
+            const form = new FormGroup(
+                {
+                    control1: new FormControl(),
+                    control2: new FormControl(),
+                    control3: new FormControl(),
+                },
+                matchingControls('error', 'control1', 'control2', 'control3'),
+            );
+
+            form.patchValue({control1: 'asd', control2: 'qwe'});
+
+            expect(form.get('control1').errors.mismatched).toEqual(
+                jasmine.any(EkitValidatorsError),
+            );
+            expect(form.get('control2').errors.mismatched).toEqual(
+                jasmine.any(EkitValidatorsError),
+            );
+            expect(form.get('control3').errors.mismatched).toEqual(
+                jasmine.any(EkitValidatorsError),
+            );
+        });
+
+        it('Если значения совпадают, то форма валидна', () => {
+            const form = new FormGroup(
+                {
+                    control1: new FormControl(),
+                    control2: new FormControl(),
+                },
+                matchingControls('error', 'control1', 'control2'),
+            );
+
+            form.setValue({control1: 'qwe', control2: 'qwe'});
+
+            expect(form.valid).toBeTruthy();
         });
     });
 });

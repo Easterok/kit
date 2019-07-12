@@ -28,7 +28,7 @@ function createSpyObserver(): SpyObserver {
     };
 }
 
-fdescribe('TakeUntilDestroy', () => {
+describe('TakeUntilDestroy', () => {
     it('Не мутирует значения', () => {
         const spy = createSpyObserver();
         const component = new Test();
