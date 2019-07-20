@@ -35,7 +35,7 @@ const CUSTOM_INPUT_VALIDATOR: Provider = {
 const ATTACH_FILE_ERROR = {attachFile: new EkitValidatorsError('Неверный формат файла')};
 
 @Component({
-    selector: 'app-input-file',
+    selector: 'ekit-input-file',
     templateUrl: './input-file.component.html',
     styleUrls: ['./input-file.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
