@@ -1,8 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import {
-    HttpClientTestingModule,
-    HttpTestingController,
-} from '@angular/common/http/testing';
+import {HttpClientTestingModule, HttpTestingController,} from '@angular/common/http/testing';
 import {WITH_CREDENTIALS_PROVIDER} from './with-credentials-interceptor';
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';

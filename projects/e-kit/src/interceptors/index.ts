@@ -1,1 +1,2 @@
-export * from './with-credentials-interceptor/with-credentials-interceptor';
+export * from './with-credentials/with-credentials-interceptor';
+export * from './dto-converter/dto-converter';
