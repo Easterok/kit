@@ -104,12 +104,14 @@ export function maxValidator(max: number): EkitValidatorFn {
     };
 }
 
+const MISMATCHED_KEY = 'mismatched';
+
 export function matchingControls(
     message: string,
     ...controls: string[]
 ): EkitValidatorFn {
     const matchingError = {
-        mismatched: new EkitValidatorsError(message),
+        [MISMATCHED_KEY]: new EkitValidatorsError(message),
     };
 
     if (controls.length <= 1) {
@@ -119,9 +121,37 @@ export function matchingControls(
     return (group: FormGroup): {mismatched: EkitValidatorsError} | null => {
         const first = group.controls[controls[0]];
         const next = controls.slice(1);
-        const isMatching = next.every(key => group.controls[key].value === first.value);
+        const isMatching = next.every(key => {
+            const control = group.controls[key];
+
+            if (control.touched) {
+                return control.value === first.value;
+            }
+
+            return true;
+        });
 
         if (isMatching) {
+            controls.forEach(control => {
+                const errors = group.controls[control].errors;
+
+                if (!errors) {
+                    return;
+                }
+
+                if (Object.keys(errors).length === 1) {
+                    group.controls[control].setErrors(null);
+
+                    return;
+                }
+
+                if (Object.keys(errors).length !== 1) {
+                    delete group.controls[control].errors[MISMATCHED_KEY];
+
+                    return;
+                }
+            });
+
             return null;
         }
 
