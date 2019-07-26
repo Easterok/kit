@@ -124,11 +124,8 @@ export function matchingControls(
         const isMatching = next.every(key => {
             const control = group.controls[key];
 
-            if (control.touched) {
-                return control.value === first.value;
-            }
-
-            return true;
+            // todo: fix this
+            return control.value === first.value;
         });
 
         if (isMatching) {
