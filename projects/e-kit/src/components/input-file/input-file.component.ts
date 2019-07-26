@@ -167,7 +167,7 @@ export class EkitInputFileComponent implements ControlValueAccessor, Validator {
         }
 
         if (this.allowFileTypes.length !== 0) {
-            const [_, allowedTypes] = this.allowFileTypes.map(type => type.split('/'));
+            const allowedTypes = this.allowFileTypes.map(type => type.split('/')[1]);
 
             return ALLOWED + '.' + allowedTypes.join(JOINED_STR);
         }
