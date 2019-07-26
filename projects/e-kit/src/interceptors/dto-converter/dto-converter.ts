@@ -40,6 +40,6 @@ export class EkitDtoConverterInterceptor implements HttpInterceptor {
 
 export const EKIT_DTO_CONVERTER_PROVIDER: Provider = {
     provide: HTTP_INTERCEPTORS,
-    useClass: EkitDtoConverterInterceptor,
+    useValue: EkitDtoConverterInterceptor,
     multi: true,
 };
