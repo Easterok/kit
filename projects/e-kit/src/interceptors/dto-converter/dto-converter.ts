@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
 import {EkitDtoConverterService} from '../../services/dto-converter.service';
 
 // todo: tests
-export class DtoConverterInterceptor implements HttpInterceptor {
+export class EkitDtoConverterInterceptor implements HttpInterceptor {
     constructor(private readonly dtoConverterService: EkitDtoConverterService) {}
 
     intercept<T>(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
@@ -40,6 +40,6 @@ export class DtoConverterInterceptor implements HttpInterceptor {
 
 export const EKIT_DTO_CONVERTER_PROVIDER: Provider = {
     provide: HTTP_INTERCEPTORS,
-    useClass: DtoConverterInterceptor,
+    useClass: EkitDtoConverterInterceptor,
     multi: true,
 };
